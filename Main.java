@@ -5,8 +5,8 @@ class Complex{
     public final double imaginary;
 
     public Complex(double re, double im){
-        this.real = re;
-        this.imaginary = im;
+        this.real = (re == -0) ? 0 : re;
+        this.imaginary = (im == -0) ? 0 : im;
     }
 
     public Complex add(Complex other){
@@ -26,6 +26,8 @@ class Complex{
     }
 
     public Complex divide(Complex other){
+        //A+BI
+        //C+DI
         double denom = (other.real)*(other.real) + (other.imaginary)*(other.imaginary);
         if (denom == 0){
             throw new IllegalArgumentException("Второе комплексное число равно 0!");
@@ -231,8 +233,8 @@ class ComplexMatrix{
     }
 
     public ComplexMatrix divide(ComplexMatrix other){
-        ComplexMatrix inverse = other.inverse();
-        ComplexMatrix res = this.multiply(inverse);
+        ComplexMatrix invers = other.inverse();
+        ComplexMatrix res = this.multiply(invers);
         return res;
     }
 
@@ -272,23 +274,44 @@ public class Main{
         }
         return Matrix;
     }
+
+    private static ComplexMatrix get_matrix_from_name(String name, ComplexMatrix A, ComplexMatrix B, ComplexMatrix C){
+        switch(name.toLowerCase()){
+            case "a": return A;
+            case "b": return B;
+            case "c": return C;
+            default: return null;
+        }
+    }
+
+
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
         ComplexMatrix A = null;
         ComplexMatrix B = null;
+        ComplexMatrix C = null;
+        ComplexMatrix option1 = null;
+        ComplexMatrix option2 = null;
+        ComplexMatrix res = null;
+
+        System.out.println("----СКРИПТ ДЛЯ РАБОТЫ С МАТРИЦАМИ КОМПЛЕКСНЫХ ЧИСЕЛ----");
+        System.out.println("Матрица C является временной хранящей последнее существенное действие");
+        System.out.println("Любой результат последующих операций(кроме вывода и подсчета определителя и задания A/B) изменит матрицу C");
+        System.out.println("Комплексное число вида 2+2i записывать в виде 2 2");
+        System.out.println("Буквы вводить на английском");
+
+        System.out.println();
         while (true){
-            System.out.println("1 - создать матрицу A");
-            System.out.println("2 - создать матрицу B");
-            System.out.println("3 - сложить матрицы A и B");
-            System.out.println("4 - вычесть матрицы A и B");
-            System.out.println("5 - умножить матрицы A и B");
-            System.out.println("6 - поделить матрицы A и B");
-            System.out.println("7 - транспонировать A");
-            System.out.println("8 - транспонировать B");
-            System.out.println("9 - вывести определитель A");
-            System.out.println("10 - вывести определитель B");
-            System.out.println("11 - вывести A");
-            System.out.println("12 - вывести B");
+            System.out.println("1 - Задать/Изменить матрицу A");
+            System.out.println("2 - Задать/Изменить матрицу B");
+            System.out.println("3 - Сложить");
+            System.out.println("4 - Вычесть");
+            System.out.println("5 - Умножить");
+            System.out.println("6 - Поделить");
+            System.out.println("7 - Транспонировать");
+            System.out.println("8 - Определитель");
+            System.out.println("9 - Обратная");
+            System.out.println("10 - Вывести");
             System.out.println("-1 - завершить работу");
             System.out.println("Введите действие: ");
             int option = sc.nextInt();
@@ -299,65 +322,115 @@ public class Main{
                     case 2: B = inputMatrix(sc); break;
 
                     case 3:
-                        if(A == null || B == null){
-                            throw new IllegalArgumentException("Сначала создайте матрицы A и B..");
+                        System.out.print("Введите первую матрицу для сложения(A/B/C): ");
+                        sc.nextLine();
+                        option1 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        System.out.print("Введите вторую матрицу для сложения(A/B/C): ");
+                        option2 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        if(option1 == null || option2 == null){
+                            throw new IllegalArgumentException("Сначала создайте матрицы(или же была введена несуществующая матрица)");
                         }
-                        A.add(B).print();
+                        res = option1.add(option2);
+                        C = res;
+                        res.print();
                         break;
                     case 4:
-                        if(A == null || B == null){
-                        throw new IllegalArgumentException("Сначала создайте матрицы A и B..");
+                        System.out.print("Введите первую матрицу для вычитания(A/B/C): ");
+                        sc.nextLine();
+                        option1 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        System.out.print("Введите вторую матрицу для вычитания(A/B/C): ");
+                        option2 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        if(option1 == null || option2 == null){
+                            throw new IllegalArgumentException("Сначала создайте матрицы(или же была введена несуществующая матрица)");
                         }
-                        A.subtract(B).print();
+                        res = option1.subtract(option2);
+                        C = res;
+                        res.print();
                         break;
                     case 5:
-                        if(A == null || B == null){
-                        throw new IllegalArgumentException("Сначала создайте матрицы A и B..");
+                        System.out.print("Введите первую матрицу для умножения(A/B/C): ");
+                        sc.nextLine();
+                        option1 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        System.out.print("Введите вторую матрицу для умножения(A/B/C): ");
+                        option2 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        if(option1 == null || option2 == null){
+                            throw new IllegalArgumentException("Сначала создайте матрицы(или же была введена несуществующая матрица)");
                         }
-                        A.multiply(B).print();
+                        res = option1.multiply(option2);
+                        C = res;
+                        res.print();
                         break;
                     case 6:
-                        if(A == null || B == null){
-                        throw new IllegalArgumentException("Сначала создайте матрицу A и B");
+                        System.out.print("Введите первую матрицу для деления(A/B/C): ");
+                        sc.nextLine();
+                        option1 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        System.out.print("Введите вторую матрицу для деления(A/B/C): ");
+                        option2 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        if(option1 == null || option2 == null){
+                            throw new IllegalArgumentException("Сначала создайте матрицы(или же была введена несуществующая матрица)");
                         }
-                        A.divide(B).print();
+                        res = option1.divide(option2);
+                        C = res;
+                        res.print();
                         break;
                     case 7:
-                        if(A == null){
-                            throw new IllegalArgumentException("Сначала создайте матрицу A..");
+                        System.out.print("Введите матрицу для транспонирования(A/B/C): ");
+                        sc.nextLine();
+                        option1 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        if(option1 == null){
+                            throw new IllegalArgumentException("Сначала создайте матрицу(или была введена несуществующая матрица)");
                         }
-                        A.Transponse().print();
+                        res = option1.Transponse();
+                        C = res;
+                        res.print();
                         break;
+
                     case 8:
-                        if(B == null){
-                        throw new IllegalArgumentException("Сначала создайте матрицу B..");
+                        System.out.print("Введите матрицу для вычисления определителя(A/B/C): ");
+                        sc.nextLine();
+                        option1 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        if(option1 == null){
+                            throw new IllegalArgumentException("Сначала создайте матрицу(или была введена несуществующая матрица)");
                         }
-                        B.Transponse().print();
+                        String matr_name;
+                        if(option1 == A){
+                            matr_name = "A";
+                        }
+                        else if(option1 == B){
+                            matr_name = "B";
+                        }
+                        else if(option1 == C){
+                            matr_name = "C";
+                        }
+                        else{
+                            matr_name = "Неизвестная матрица";
+                        }
+                        Complex res_c = option1.det();
+                        System.out.print("Детерминант матрицы " + matr_name + " = ");
+                        System.out.println(res_c.ToString());
                         break;
                     case 9:
-                        if(A == null){
-                        throw new IllegalArgumentException("Сначала создайте матрицу A..");
+                        System.out.print("Введите матрицу для подсчета обратной(A/B/C): ");
+                        sc.nextLine();
+                        option1 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        if(option1 == null){
+                            throw new IllegalArgumentException("Сначала создайте матрицу(или была введена несуществующая матрица)");
                         }
-                        System.out.println(A.det().ToString());
+                        res = option1.inverse();
+                        C = res;
+                        res.print();
                         break;
                     case 10:
-                        if(B == null){
-                            throw new IllegalArgumentException("Сначала создайте матрицу B..");
+                        System.out.print("Введите матрицу для вывода(A/B/C): ");
+                        sc.nextLine();
+                        option1 = get_matrix_from_name(sc.nextLine(), A, B, C);
+                        if(option1 == null){
+                            throw new IllegalArgumentException("Сначала создайте матрицу(или была введена несуществующая матрица)");
                         }
-                        System.out.println(B.det().ToString());
+                        option1.print();
                         break;
-                    case 11:
-                        if(A == null){
-                        throw new IllegalArgumentException("Сначала создайте матрицу A..");
-                    }
-                        A.print();
-                        break;
-                    case 12:
-                        if(B == null){
-                        throw new IllegalArgumentException("Сначала создайте матрицу B..");
-                    }
-                        B.print();
-                        break;
+
+
                     case -1:
                         return;
                     default: System.out.println("Нет такой опции");
